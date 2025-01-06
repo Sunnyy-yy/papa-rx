@@ -17,23 +17,23 @@ interface Medicine {
 const PrescriptionApp: NextPage = () => {
   const [medicines, setMedicines] = useState<Medicine[]>([]);
   const [medicineName, setMedicineName] = useState("");
-  const [medicineType, setMedicineType] = useState("Tab");
+  const [medicineType, setMedicineType] = useState("Tablet");
   const [medicineQuantity, setMedicineQuantity] = useState("");
   const [suggestedMedicines, setSuggestedMedicines] = useState<string[]>([]);
 
-  useEffect(() => {
-    // Fetch medicines from the API
-    const fetchMedicines = async () => {
-      try {
-        const response = await fetch("/api/medicine");
-        const data = await response.json();
-        setSuggestedMedicines(data);
-      } catch (error) {
-        console.error("Error fetching medicines:", error);
-      }
-    };
-    fetchMedicines();
-  }, []);
+    useEffect(() => {
+      // Fetch medicines from the API
+      const fetchMedicines = async () => {
+        try {
+          const response = await fetch("/api/medicine");
+          const data = await response.json();
+          setSuggestedMedicines(data);
+        } catch (error) {
+          console.error("Error fetching medicines:", error);
+        }
+      };
+      fetchMedicines();
+    }, []);
 
   const [patientDetails, setPatientDetails] = useState({
     name: "",
@@ -41,12 +41,13 @@ const PrescriptionApp: NextPage = () => {
     weight: "",
     bp: "",
     pulse: "",
+    misc:"",
   });
 
   const resetDetails = () => {
     setMedicines([]);
     setMedicineName("");
-    setMedicineType("Tab");
+    setMedicineType("Tablet");
     setMedicineQuantity("");
     setPatientDetails({
       name: "",
@@ -54,6 +55,7 @@ const PrescriptionApp: NextPage = () => {
       weight: "",
       bp: "",
       pulse: "",
+      misc: "",
     });
   };
 
@@ -112,69 +114,86 @@ const PrescriptionApp: NextPage = () => {
       <style>
         body {
           font-family: Arial, sans-serif;
-          padding: 10px;
-        }
-        h1, h2 {
-          text-align: center;
         }
         .header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 20px;
-        }
-
-        .logo {
-          padding-left: 20px;
-          margin-left: 20px;
+          text-align: right;
+          margin-bottom: 5px;
         }
         
-        .patient-info {
-          display: flex;
-          justify-content: space-evenly;
-          flex-wrap: wrap;
+        .header h2 {
+          padding: 0;
         }
+
+        .header p {
+          font-size: 12px;
+        }
+
+        .patient-info {
+              display: flex;
+              justify-content: space-between;
+              flex-wrap: wrap;
+              flex-direction: column;
+        }
+
         .patient-info, .medicines-table {
-          margin-top: 20px;
+          font-size: 12px;
+          margin-top: 10px;
         }
 
         hr {
           border: 1px solid black;
         }
+
+
         .medicines-table table {
           width: 100%;
+          height: wrap-content;
           border-collapse: collapse;
+          font-size: 12px;
         }
+
         .medicines-table th, .medicines-table td {
           border: 1px solid black;
           padding: 8px;
           text-align: center;
         }
+
         .rx-symbol {
-          font-size: 36px;
+          font-size: 20px;
           font-weight: bold;
-          margin-bottom: 20px;
-          margin-top: 20px;
+          margin-top: 5px;
+        }
+        .footer {
+          position: fixed;
+          bottom: 0;
+          width: 100%;
+        }
+        .footer h6{
+          font-size: 8px;
         }
       </style>
     </head>
     <body>
       <div class="header">
-        <img id="nimalogo" src= ${nimalogo.src} width=150 height=150>
+        <img id="nimalogo" src= ${nimalogo.src} width=100 height=100>
         <div>
-        <h1>डॅा. गोपाल बी. पाटील</h1>
-        बी.ए.एम.एस. (पुणे), रजि. नं. I-29117A-1
+        <h2>डॅा. गोपाल बी. पाटील</h2>
+        <p> बी.ए.एम.एस. (पुणे), रजि. नं. I-29117A-1 </p>
         <p> के-हाळे बु.॥ </p>
         </div>
       </div>
       <hr />
       <div class="patient-info">
-        <div><strong>Name:</strong> ${patientDetails.name}</div>
-        <div><strong>Date:</strong> ${currentDate}</div>
-        <div><strong>Age:</strong> ${patientDetails.age}</div>
-        <div><strong>Weight:</strong> ${patientDetails.weight} kg</div>
-        <div><strong>B.P.:</strong> ${patientDetails.bp}</div>
-        <div><strong>Pulse:</strong> ${patientDetails.pulse}</div>
+        <div style="display: flex; justify-content: space-between;"> <div> <strong>Name:</strong>${patientDetails.name} </div>
+        <div><strong>Date:</strong>${currentDate} </div> </div> 
+        <div style="display: flex; justify-content: space-between;"> <div> <strong>Age:</strong> ${patientDetails.age} </div>
+        <div> <strong>Weight:</strong> ${patientDetails.weight}kg </div>
+        <div> <strong>B.P.:</strong> ${patientDetails.bp} </div>
+        <div> <strong>Pulse:</strong> ${patientDetails.pulse}</div> </div>
+        <div><strong>Misc:</strong> ${patientDetails.misc}</div>
       </div>
       <div class="rx-symbol">℞</div>
       <div class="medicines-table">
@@ -183,10 +202,11 @@ const PrescriptionApp: NextPage = () => {
             <tr>
               <th>Type</th>
               <th>Name</th>
-              <th>Morning</th>
-              <th>Afternoon</th>
-              <th>Evening</th>
-              <th>Quantity</th>
+              <th>Qty.</th>
+              <th width="1px" style="font-size: 6px">सकाळ</th>
+              <th width="1px" style="font-size: 6px">दुपार</th>
+              <th width="1px" style="font-size: 6px">संध्या</th>
+              <th>Remarks</th>
             </tr>
           </thead>
           <tbody>
@@ -196,16 +216,22 @@ const PrescriptionApp: NextPage = () => {
               <tr>
                 <td>${medicine.type}</td>
                 <td>${medicine.name}</td>
-                <td>${medicine.schedule.morning ? "1" : "-"}</td>
-                <td>${medicine.schedule.afternoon ? "1" : "-"}</td>
-                <td>${medicine.schedule.evening ? "1" : "-"}</td>
                 <td>${medicine.quantity}</td>
+                <td>${medicine.schedule.morning ? "1" : " "}</td>
+                <td>${medicine.schedule.afternoon ? "1" : " "}</td>
+                <td>${medicine.schedule.evening ? "1" : " "}</td>
+                <td> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
               </tr>
             `
               )
               .join("")}
           </tbody>
         </table>
+      </div>
+      <div class="footer">
+      <hr />
+      <h6> १) वरील औषधी डॉक्टरांना दाखविल्या शिवाय घेऊ नये. २) औषधीचा काही दुष्परिणाम दिसल्यास त्वरित औषधी बंद करून डॉक्टरांशी संपर्क साधावा. 
+      ३) फेर तपासणी साठी परत येतांना हा कागद सोबत आणावा. ४) फेर तपासणी &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; दिवसांनी. </h6>
       </div>
     </body>
   </html>
@@ -218,12 +244,12 @@ const PrescriptionApp: NextPage = () => {
       if (img) {
         img.onload = () => {
           newWindow.print();
-          newWindow.close();
+          // newWindow.close();
           resetDetails(); // Reset all details after printing
         };
       } else {
         newWindow.print();
-        newWindow.close();
+        // newWindow.close();
         resetDetails(); // Reset all details if image is not found
       }
     }
@@ -276,12 +302,21 @@ const PrescriptionApp: NextPage = () => {
             }
           />
           <input
-            type="text"
+            type="number"
             placeholder="Pulse Count"
             className="text-black border p-2 rounded"
             value={patientDetails.pulse}
             onChange={(e) =>
               setPatientDetails({ ...patientDetails, pulse: e.target.value })
+            }
+          />
+          <input
+            type="textbox"
+            placeholder="Misc"
+            className="text-black border p-2 rounded"
+            value={patientDetails.misc}
+            onChange={(e) =>
+              setPatientDetails({ ...patientDetails, misc: e.target.value })
             }
           />
         </div>
@@ -308,9 +343,13 @@ const PrescriptionApp: NextPage = () => {
             value={medicineType}
             onChange={(e) => setMedicineType(e.target.value)}
           >
-            <option value="Tab">Tablet</option>
-            <option value="Cap">Capsule</option>
-            <option value="Syr">Syrup</option>
+            <option value="Tablet">Tablet</option>
+            <option value="Capsule">Capsule</option>
+            <option value="Syrup">Syrup</option>
+            <option value="Lotion">Lotion</option>
+            <option value="Ointment">Ointment</option>
+            <option value="Cream">Cream</option>
+            <option value="">Other</option>
           </select>
           <input
             type="number"
@@ -390,10 +429,10 @@ const PrescriptionApp: NextPage = () => {
             <tr>
               <th className="border border-gray-300 px-4 py-2">Type</th>
               <th className="border border-gray-300 px-4 py-2">Name</th>
+              <th className="border border-gray-300 px-4 py-2">Quantity</th>
               <th className="border border-gray-300 px-4 py-2">Morning</th>
               <th className="border border-gray-300 px-4 py-2">Afternoon</th>
               <th className="border border-gray-300 px-4 py-2">Evening</th>
-              <th className="border border-gray-300 px-4 py-2">Quantity</th>
               <th className="border border-gray-300 px-4 py-2">Actions</th>
             </tr>
           </thead>
@@ -402,6 +441,7 @@ const PrescriptionApp: NextPage = () => {
               <tr key={index}>
                 <td className="border border-gray-300 px-4 py-2">{medicine.type}</td>
                 <td className="border border-gray-300 px-4 py-2">{medicine.name}</td>
+                <td className="border border-gray-300 px-4 py-2">{medicine.quantity}</td>
                 <td className="border border-gray-300 px-4 py-2">
                   <input
                     type="checkbox"
@@ -423,7 +463,6 @@ const PrescriptionApp: NextPage = () => {
                     onChange={() => toggleSchedule(index, "evening")}
                   />
                 </td>
-                <td className="border border-gray-300 px-4 py-2">{medicine.quantity}</td>
                 <td className="border border-gray-300 px-4 py-2">
                   <button
                     className="bg-red-500 text-white px-2 py-1 rounded"
@@ -440,7 +479,7 @@ const PrescriptionApp: NextPage = () => {
         className="bg-green-500 text-white px-6 py-3 rounded mt-6 block mx-auto"
         onClick={generatePrescription}
       >
-        Generate Printable Prescription
+        Generate Prescription
       </button>
     </div>
   );
