@@ -1,4 +1,4 @@
-# Prescription Management App
+# Papa's Rx
 
 This app is designed to help manage patient prescriptions. It allows for the generation of printable prescriptions with patient details, medicine lists, and schedules.
 
