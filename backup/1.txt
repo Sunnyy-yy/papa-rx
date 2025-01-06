@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { NextPage } from "next";
 import nimalogo from '../../public/nima.png';
 
@@ -19,21 +19,11 @@ const PrescriptionApp: NextPage = () => {
   const [medicineName, setMedicineName] = useState("");
   const [medicineType, setMedicineType] = useState("Tab");
   const [medicineQuantity, setMedicineQuantity] = useState("");
-  const [suggestedMedicines, setSuggestedMedicines] = useState<string[]>([]);
-
-  useEffect(() => {
-    // Fetch medicines from the API
-    const fetchMedicines = async () => {
-      try {
-        const response = await fetch("/api/medicine");
-        const data = await response.json();
-        setSuggestedMedicines(data);
-      } catch (error) {
-        console.error("Error fetching medicines:", error);
-      }
-    };
-    fetchMedicines();
-  }, []);
+  const [suggestedMedicines, setSuggestedMedicines] = useState<string[]>([
+    "Zifi-200",
+    "Zincovit",
+    "Nosee",
+  ]);
 
   const [patientDetails, setPatientDetails] = useState({
     name: "",
@@ -42,6 +32,39 @@ const PrescriptionApp: NextPage = () => {
     bp: "",
     pulse: "",
   });
+
+  const addMedicine = () => {
+    const newMedicine: Medicine = {
+      name: medicineName,
+      type: medicineType,
+      quantity: medicineQuantity,
+      schedule: {
+        morning: false,
+        afternoon: false,
+        evening: false,
+      },
+    };
+
+    setMedicines((prev) => [...prev, newMedicine]);
+    if (!suggestedMedicines.includes(medicineName)) {
+      setSuggestedMedicines((prev) => [...prev, medicineName]);
+    }
+    setMedicineName("");
+  };
+
+  const deleteMedicine = (index: number) => {
+    const updatedMedicines = medicines.filter((_, i) => i !== index);
+    setMedicines(updatedMedicines);
+  };
+
+  const toggleSchedule = (
+    index: number,
+    time: "morning" | "afternoon" | "evening"
+  ) => {
+    const updatedMedicines = [...medicines];
+    updatedMedicines[index].schedule[time] = !updatedMedicines[index].schedule[time];
+    setMedicines(updatedMedicines);
+  };
 
   const resetDetails = () => {
     setMedicines([]);
@@ -57,158 +80,121 @@ const PrescriptionApp: NextPage = () => {
     });
   };
 
-  const addMedicine = async () => {
-    const newMedicine: Medicine = {
-      name: medicineName,
-      type: medicineType,
-      quantity: medicineQuantity,
-      schedule: {
-        morning: false,
-        afternoon: false,
-        evening: false,
-      },
-    };
-
-    setMedicines((prev) => [...prev, newMedicine]);
-    if (!suggestedMedicines.includes(medicineName)) {
-      setSuggestedMedicines((prev) => [...prev, medicineName]);
-      // Save the medicine to the API
-      try {
-        await fetch("/api/medicine", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ medicine: medicineName }),
-        });
-      } catch (error) {
-        console.error("Error saving medicine:", error);
-      }
-    }
-    setMedicineName("");
-  };
-  const deleteMedicine = (index: number) => {
-    const updatedMedicines = medicines.filter((_, i) => i !== index);
-    setMedicines(updatedMedicines);
-  };
-
-  const toggleSchedule = (
-    index: number,
-    time: "morning" | "afternoon" | "evening"
-  ) => {
-    const updatedMedicines = [...medicines];
-    updatedMedicines[index].schedule[time] = !updatedMedicines[index].schedule[time];
-    setMedicines(updatedMedicines);
-  };
 
   const metaDate = new Date();
-  const day = String(metaDate.getDate()).padStart(2, '0');
-  const month = String(metaDate.getMonth() + 1).padStart(2, '0');
+
+  // Get the day, month, and year
+  const day = String(metaDate.getDate()).padStart(2, '0');  // Adds leading zero if day is single digit
+  const month = String(metaDate.getMonth() + 1).padStart(2, '0');  // Months are zero-indexed, so we add 1
   const year = metaDate.getFullYear();
+  
+  // Combine into dd/mm/yyyy format
   const currentDate = `${day}/${month}/${year}`;
 
   const generatePrescription = () => {
-    const prescriptionHTML = `
-    <html>
-    <head>
-      <style>
-        body {
-          font-family: Arial, sans-serif;
-          padding: 10px;
-        }
-        h1, h2 {
-          text-align: center;
-        }
-        .header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 20px;
-        }
+    const prescriptionHTML =`
+      <html>
+        <head>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              padding: 10px;
+            }
+            h1, h2 {
+              text-align: center;
+            }
+            .header {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 20px;
+            }
 
-        .logo {
-          padding-left: 20px;
-          margin-left: 20px;
-        }
-        
-        .patient-info {
-          display: flex;
-          justify-content: space-evenly;
-          flex-wrap: wrap;
-        }
-        .patient-info, .medicines-table {
-          margin-top: 20px;
-        }
+            .logo {
+              padding-left: 20px;
+              margin-left: 20px;
+            }
+            
+            .patient-info {
+              display: flex;
+              justify-content: space-evenly;
+              flex-wrap: wrap;
+            }
+            .patient-info, .medicines-table {
+              margin-top: 20px;
+            }
 
-        hr {
-          border: 1px solid black;
-        }
-        .medicines-table table {
-          width: 100%;
-          border-collapse: collapse;
-        }
-        .medicines-table th, .medicines-table td {
-          border: 1px solid black;
-          padding: 8px;
-          text-align: center;
-        }
-        .rx-symbol {
-          font-size: 36px;
-          font-weight: bold;
-          margin-bottom: 20px;
-          margin-top: 20px;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="header">
-        <img id="nimalogo" src= ${nimalogo.src} width=150 height=150>
-        <div>
-        <h1>डॅा. गोपाल बी. पाटील</h1>
-        बी.ए.एम.एस. (पुणे), रजि. नं. I-29117A-1
-        <p> के-हाळे बु.॥ </p>
-        </div>
-      </div>
-      <hr />
-      <div class="patient-info">
-        <div><strong>Name:</strong> ${patientDetails.name}</div>
-        <div><strong>Date:</strong> ${currentDate}</div>
-        <div><strong>Age:</strong> ${patientDetails.age}</div>
-        <div><strong>Weight:</strong> ${patientDetails.weight} kg</div>
-        <div><strong>B.P.:</strong> ${patientDetails.bp}</div>
-        <div><strong>Pulse:</strong> ${patientDetails.pulse}</div>
-      </div>
-      <div class="rx-symbol">℞</div>
-      <div class="medicines-table">
-        <table>
-          <thead>
-            <tr>
-              <th>Type</th>
-              <th>Name</th>
-              <th>Morning</th>
-              <th>Afternoon</th>
-              <th>Evening</th>
-              <th>Quantity</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${medicines
-              .map(
-                (medicine) => `
-              <tr>
-                <td>${medicine.type}</td>
-                <td>${medicine.name}</td>
-                <td>${medicine.schedule.morning ? "1" : "-"}</td>
-                <td>${medicine.schedule.afternoon ? "1" : "-"}</td>
-                <td>${medicine.schedule.evening ? "1" : "-"}</td>
-                <td>${medicine.quantity}</td>
-              </tr>
-            `
-              )
-              .join("")}
-          </tbody>
-        </table>
-      </div>
-    </body>
-  </html>
+            hr {
+              border: 1px solid black;
+            }
+            .medicines-table table {
+              width: 100%;
+              border-collapse: collapse;
+            }
+            .medicines-table th, .medicines-table td {
+              border: 1px solid black;
+              padding: 8px;
+              text-align: center;
+            }
+            .rx-symbol {
+              font-size: 36px;
+              font-weight: bold;
+              margin-bottom: 20px;
+              margin-top: 20px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <img id="nimalogo" src= ${nimalogo.src} width=150 height=150>
+            <div>
+            <h1>डॅा. गोपाल बी. पाटील</h1>
+            बी.ए.एम.एस. (पुणे), रजि. नं. I-29117A-1
+            <p> के-हाळे बु.॥ </p>
+            </div>
+          </div>
+          <hr />
+          <div class="patient-info">
+            <div><strong>Name:</strong> ${patientDetails.name}</div>
+            <div><strong>Date:</strong> ${currentDate}</div>
+            <div><strong>Age:</strong> ${patientDetails.age}</div>
+            <div><strong>Weight:</strong> ${patientDetails.weight} kg</div>
+            <div><strong>B.P.:</strong> ${patientDetails.bp}</div>
+            <div><strong>Pulse:</strong> ${patientDetails.pulse}</div>
+          </div>
+          <div class="rx-symbol">℞</div>
+          <div class="medicines-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Name</th>
+                  <th>Morning</th>
+                  <th>Afternoon</th>
+                  <th>Evening</th>
+                  <th>Quantity</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${medicines
+                  .map(
+                    (medicine) => `
+                  <tr>
+                    <td>${medicine.type}</td>
+                    <td>${medicine.name}</td>
+                    <td>${medicine.schedule.morning ? "1" : "-"}</td>
+                    <td>${medicine.schedule.afternoon ? "1" : "-"}</td>
+                    <td>${medicine.schedule.evening ? "1" : "-"}</td>
+                    <td>${medicine.quantity}</td>
+                  </tr>
+                `
+                  )
+                  .join("")}
+              </tbody>
+            </table>
+          </div>
+        </body>
+      </html>
     `;
 
     const newWindow = window.open("", "_blank");
@@ -219,19 +205,19 @@ const PrescriptionApp: NextPage = () => {
         img.onload = () => {
           newWindow.print();
           newWindow.close();
-          resetDetails(); // Reset all details after printing
         };
       } else {
+        // Fallback in case the image is not found
+        console.error("Logo image not found in the new window.");
         newWindow.print();
         newWindow.close();
-        resetDetails(); // Reset all details if image is not found
       }
     }
   };
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-       <header className="text-center mb-8">
+      <header className="text-center mb-8">
         <h1 className="text-2xl font-bold">Papa's Rx</h1>
         <hr className="my-4" />
       </header>
@@ -436,13 +422,13 @@ const PrescriptionApp: NextPage = () => {
             ))}
           </tbody>
         </table>
-      <button
+        <button
         className="bg-green-500 text-white px-6 py-3 rounded mt-6 block mx-auto"
         onClick={generatePrescription}
       >
         Generate Printable Prescription
       </button>
-    </div>
+      </div>
   );
 };
 

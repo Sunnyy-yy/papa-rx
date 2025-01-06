@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Prescription Management App
 
-## Getting Started
+This app is designed to help manage patient prescriptions. It allows for the generation of printable prescriptions with patient details, medicine lists, and schedules.
 
-First, run the development server:
+## Features:
+- **Prescription Generation**: Generate a printable prescription with patient details, including name, age, weight, and vital statistics like B.P. and pulse.
+- **Medicine List**: Dynamically fetch and manage a list of medicines. Medicines can be added to a text file and retrieved for use in prescriptions.
+- **Dynamic Scheduling**: Include medicine schedules (morning, afternoon, evening) and quantities in the prescription.
+- **Responsive**: The app is built with a simple and responsive UI for easy use.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Technologies Used:
+- **Next.js**: Framework used for building the app.
+- **React**: For creating interactive components.
+- **MongoDB (optional)**: For storing medicine lists (if needed, can be swapped with local file storage).
+- **JavaScript**: The main programming language used for logic and UI components.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Key Files:
+- **`/pages/api/medicine.ts`**: API to manage the medicine list, supporting GET and POST methods.
+- **`/data/medicines.txt`**: Local storage file for storing medicine names.
+- **Prescription Generation**: Using HTML and inline CSS for styling, a prescription is generated with dynamic patient and medicine details.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## How to Use:
+1. Run the app using `npm run dev` or `yarn dev`.
+2. Use the `/api/medicine` route to get or add medicines to the list.
+3. Generate a prescription by selecting a patient and adding the necessary medicines.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Setup:
+1. Ensure you have `Node.js` installed.
+2. Clone the repository and navigate to the project folder.
+3. Install dependencies:
+   ```bash
+   npm install
