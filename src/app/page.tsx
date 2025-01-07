@@ -114,7 +114,17 @@ const PrescriptionApp: NextPage = () => {
   const year = metaDate.getFullYear();
   const currentDate = `${day}/${month}/${year}`;
 
-  const generatePrescription = () => {
+  const generatePrescription = async () => {
+    const originalDate = currentDate;
+  // Format the current date for the file path
+  const formattedDate = originalDate.replace(/\//g, "-"); // Replace '/' with '-'
+
+  const now = new Date();
+  const hours = now.getHours().toString().padStart(2, '0');  // Ensure two digits (e.g., "09" instead of "9")
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const seconds = now.getSeconds().toString().padStart(2, '0');
+  const timestamp = `${hours}:${minutes}:${seconds}`;
+
     const prescriptionHTML = `
     <html>
     <head>
@@ -212,8 +222,8 @@ const PrescriptionApp: NextPage = () => {
       </div>
       <hr />
       <div class="patient-info">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 15px"> <div> <strong>Name:</strong>${patientDetails.name} </div>
-        <div><strong>Date:</strong>${currentDate} </div> </div> 
+        <div style="display: flex; justify-content: space-between; margin-bottom: 15px"> <div> <strong>Name:</strong> ${patientDetails.name} </div>
+        <div><strong>Date:</strong> ${currentDate} </div> </div> 
         <div style="display: flex; justify-content: space-between;"> <div> <strong>Age:</strong> ${patientDetails.age} </div>
         <div> <strong>Weight:</strong> ${patientDetails.weight}kg </div>
         <div> <strong>B.P.:</strong> ${patientDetails.bp} </div>
@@ -278,6 +288,36 @@ const PrescriptionApp: NextPage = () => {
         newWindow.close();
         resetDetails(); // Reset all details if image is not found
       }
+    }
+
+    const fileName = `${patientDetails.name} ${formattedDate} ${timestamp}`;
+  
+    try {
+      const response = await fetch("/api/savePrescription", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fileName, prescriptionHTML }),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to save PDF");
+      }
+  
+      const result = await response.json();
+      const filePath = result.filePath;
+  
+      // Provide a download link to the user
+      const link = document.createElement("a");
+      link.href = `/backup/${fileName}.pdf`; // Adjust the path if needed
+      link.download = `${fileName}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      resetDetails(); // Reset details after completion
+    } catch (error) {
+      console.error("Error generating prescription:", error);
+      alert("An error occurred while generating the PDF.");
     }
   };
 
