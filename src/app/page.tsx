@@ -7,11 +7,10 @@ interface Medicine {
   name: string;
   type: string;
   quantity: string;
-  schedule: {
-    morning: boolean;
-    afternoon: boolean;
-    evening: boolean;
-  };
+  morning: string;
+  afternoon: string;
+  evening: string;
+  
 }
 
 const PrescriptionApp: NextPage = () => {
@@ -19,6 +18,9 @@ const PrescriptionApp: NextPage = () => {
   const [medicineName, setMedicineName] = useState("");
   const [medicineType, setMedicineType] = useState("Tablet");
   const [medicineQuantity, setMedicineQuantity] = useState("");
+  const [scheduleMorning, setScheduleMorning] = useState("");
+  const [scheduleAfternoon, setScheduleAfternoon] = useState("");
+  const [scheduleEvening, setScheduleEvening] = useState("");
   const [suggestedMedicines, setSuggestedMedicines] = useState<string[]>([]);
 
     useEffect(() => {
@@ -49,6 +51,9 @@ const PrescriptionApp: NextPage = () => {
     setMedicineName("");
     setMedicineType("Tablet");
     setMedicineQuantity("");
+    setScheduleAfternoon("");
+    setScheduleMorning("");
+    setScheduleEvening("");
     setPatientDetails({
       name: "",
       age: "",
@@ -64,11 +69,9 @@ const PrescriptionApp: NextPage = () => {
       name: medicineName,
       type: medicineType,
       quantity: medicineQuantity,
-      schedule: {
-        morning: false,
-        afternoon: false,
-        evening: false,
-      },
+      morning: scheduleMorning,
+      afternoon: scheduleAfternoon,
+      evening: scheduleEvening,
     };
 
     setMedicines((prev) => [...prev, newMedicine]);
@@ -86,20 +89,24 @@ const PrescriptionApp: NextPage = () => {
       }
     }
     setMedicineName("");
+    setMedicineQuantity("");
+    setScheduleMorning("");
+    setScheduleAfternoon("");
+    setScheduleEvening("");
   };
   const deleteMedicine = (index: number) => {
     const updatedMedicines = medicines.filter((_, i) => i !== index);
     setMedicines(updatedMedicines);
   };
 
-  const toggleSchedule = (
-    index: number,
-    time: "morning" | "afternoon" | "evening"
-  ) => {
-    const updatedMedicines = [...medicines];
-    updatedMedicines[index].schedule[time] = !updatedMedicines[index].schedule[time];
-    setMedicines(updatedMedicines);
-  };
+  // const toggleSchedule = (
+  //   index: string,
+  //   time: "morning" | "afternoon" | "evening"
+  // ) => {
+  //   const updatedMedicines = [...medicines];
+  //   updatedMedicines[index].schedule[time] = !updatedMedicines[index].schedule[time];
+  //   setMedicines(updatedMedicines);
+  // };
 
   const metaDate = new Date();
   const day = String(metaDate.getDate()).padStart(2, '0');
@@ -111,20 +118,32 @@ const PrescriptionApp: NextPage = () => {
     const prescriptionHTML = `
     <html>
     <head>
+    </style>
       <style>
         body {
           font-family: Arial, sans-serif;
         }
         .header {
           display: flex;
-          justify-content: space-between;
+          justify-content: flex-end;
           align-items: center;
           text-align: right;
           margin-bottom: 5px;
+          font-family: Tiro Devanagari Sanskrit;
+          font-size: 28px;
         }
         
-        .header h2 {
-          padding: 0;
+        .header strong {
+          margin 0;
+        }
+
+        .logo {
+            left: 5;
+            position: fixed;
+        }
+
+        .headerText {
+          padding-top: 20px;
         }
 
         .header p {
@@ -133,7 +152,7 @@ const PrescriptionApp: NextPage = () => {
 
         .patient-info {
               display: flex;
-              justify-content: space-between;
+              justify-content: space-around;
               flex-wrap: wrap;
               flex-direction: column;
         }
@@ -161,10 +180,15 @@ const PrescriptionApp: NextPage = () => {
           text-align: center;
         }
 
+        .medicines-table td {
+          padding-top: 20px;
+          padding-bottom: 20px;
+        }
+
         .rx-symbol {
           font-size: 20px;
           font-weight: bold;
-          margin-top: 5px;
+          margin-top: 20px;
         }
         .footer {
           position: fixed;
@@ -173,27 +197,28 @@ const PrescriptionApp: NextPage = () => {
         }
         .footer h6{
           font-size: 8px;
+          margin-top: 2px;
         }
       </style>
     </head>
     <body>
       <div class="header">
-        <img id="nimalogo" src= ${nimalogo.src} width=100 height=100>
-        <div>
-        <h2>डॅा. गोपाल बी. पाटील</h2>
+        <div class="logo"> <img id="nimalogo" src= ${nimalogo.src} width=100 height=100> </div>
+        <div class="headerText">
+        <strong>डॅा. गोपाल बी. पाटील</strong>
         <p> बी.ए.एम.एस. (पुणे), रजि. नं. I-29117A-1 </p>
-        <p> के-हाळे बु.॥ </p>
+        <p> के-हाळे बु॥, तालुका-रावेर ,जिल्हा-जळगांव. 425508 </p>
         </div>
       </div>
       <hr />
       <div class="patient-info">
-        <div style="display: flex; justify-content: space-between;"> <div> <strong>Name:</strong>${patientDetails.name} </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 15px"> <div> <strong>Name:</strong>${patientDetails.name} </div>
         <div><strong>Date:</strong>${currentDate} </div> </div> 
         <div style="display: flex; justify-content: space-between;"> <div> <strong>Age:</strong> ${patientDetails.age} </div>
         <div> <strong>Weight:</strong> ${patientDetails.weight}kg </div>
         <div> <strong>B.P.:</strong> ${patientDetails.bp} </div>
         <div> <strong>Pulse:</strong> ${patientDetails.pulse}</div> </div>
-        <div><strong>Misc:</strong> ${patientDetails.misc}</div>
+        <div style="margin-top: 15px; white-space: pre-wrap;"><strong>Signs & Symptoms:-</strong> ${patientDetails.misc}</div>
       </div>
       <div class="rx-symbol">℞</div>
       <div class="medicines-table">
@@ -203,9 +228,9 @@ const PrescriptionApp: NextPage = () => {
               <th>Type</th>
               <th>Name</th>
               <th>Qty.</th>
-              <th width="1px" style="font-size: 6px">सकाळ</th>
-              <th width="1px" style="font-size: 6px">दुपार</th>
-              <th width="1px" style="font-size: 6px">संध्या</th>
+              <th style="font-size: 12px">सकाळ</th>
+              <th style="font-size: 12px">दुपार</th>
+              <th style="font-size: 12px">संध्या</th>
               <th>Remarks</th>
             </tr>
           </thead>
@@ -217,9 +242,9 @@ const PrescriptionApp: NextPage = () => {
                 <td>${medicine.type}</td>
                 <td>${medicine.name}</td>
                 <td>${medicine.quantity}</td>
-                <td>${medicine.schedule.morning ? "1" : " "}</td>
-                <td>${medicine.schedule.afternoon ? "1" : " "}</td>
-                <td>${medicine.schedule.evening ? "1" : " "}</td>
+                <td>${medicine.morning}</td>
+                <td>${medicine.afternoon}</td>
+                <td>${medicine.evening}</td>
                 <td> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
               </tr>
             `
@@ -243,13 +268,14 @@ const PrescriptionApp: NextPage = () => {
       const img = newWindow.document.getElementById("nimalogo");
       if (img) {
         img.onload = () => {
-          newWindow.print();
-          // newWindow.close();
-          resetDetails(); // Reset all details after printing
-        };
-      } else {
+            newWindow.print();
+            newWindow.close();
+            resetDetails(); // Reset all details after printing
+          };
+      } 
+      else {
         newWindow.print();
-        // newWindow.close();
+        newWindow.close();
         resetDetails(); // Reset all details if image is not found
       }
     }
@@ -310,10 +336,10 @@ const PrescriptionApp: NextPage = () => {
               setPatientDetails({ ...patientDetails, pulse: e.target.value })
             }
           />
-          <input
-            type="textbox"
-            placeholder="Misc"
-            className="text-black border p-2 rounded"
+          <textarea
+            placeholder="Signs & Symptoms"
+            wrap="hard"
+            className="text-black border p-2 rounded whitespace-pre-wrap"
             value={patientDetails.misc}
             onChange={(e) =>
               setPatientDetails({ ...patientDetails, misc: e.target.value })
@@ -358,70 +384,36 @@ const PrescriptionApp: NextPage = () => {
             value={medicineQuantity}
             onChange={(e) => setMedicineQuantity(e.target.value)}
           />
+          </div>
+          <div className="text-black flex items-center gap-4 my-4">
+          <input
+            type="text"
+            placeholder="Morning"
+            className="text-black border p-2 px-4 rounded"
+            value={scheduleMorning}
+            onChange={(e) => setScheduleMorning(e.target.value)}
+            />
+            <input
+                    type="text"
+                    placeholder="Afternoon"
+                    className="text-black border p-2 px-4 rounded"
+                    value={scheduleAfternoon}
+                    onChange={(e) => setScheduleAfternoon(e.target.value)}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Evening"
+                    className="text-black border p-2 px-4 rounded"
+                    value={scheduleEvening}
+                    onChange={(e) => setScheduleEvening(e.target.value)}
+                  />
           <button
-            className="bg-blue-500 text-white px-4 py-2 rounded"
+            className="bg-blue-500 text-white p-2 px-11 py-2 rounded"
             onClick={addMedicine}
           >
             Add
           </button>
          </div>
-          {/* <header className="text-center mb-4">
-            <h1 className="text-xl font-bold">Doctor's Name</h1>
-            <p>Address, Registration No.</p>
-            <hr className="my-2" />
-          </header> */}
-          {/* <div className="mb-4">
-            <p>
-              <strong>Patient Name:</strong> {patientDetails.name}
-            </p>
-            <p>
-              <strong>Date:</strong> {currentDate}
-            </p>
-            <p>
-              <strong>Age:</strong> {patientDetails.age}
-              <span className="ml-4">
-                <strong>Weight:</strong> {patientDetails.weight} kg
-              </span>
-            </p>
-            <p>
-              <strong>B.P:</strong> {patientDetails.bp}
-              <span className="ml-4">
-                <strong>Pulse:</strong> {patientDetails.pulse}
-              </span>
-            </p>
-          </div> */}
-          {/* <h2 className="font-bold text-2xl mb-2">℞</h2>
-          <table className="table-auto w-full border-collapse border border-gray-200 text-center">
-            <thead>
-              <tr>
-                <th className="border border-gray-300 px-4 py-2">Type</th>
-                <th className="border border-gray-300 px-4 py-2">Name</th>
-                <th className="border border-gray-300 px-4 py-2">Morning</th>
-                <th className="border border-gray-300 px-4 py-2">Afternoon</th>
-                <th className="border border-gray-300 px-4 py-2">Evening</th>
-                <th className="border border-gray-300 px-4 py-2">Quantity</th>
-              </tr>
-            </thead>
-            <tbody>
-              {medicines.map((medicine, index) => (
-                <tr key={index}>
-                  <td className="border border-gray-300 px-4 py-2">{medicine.type}</td>
-                  <td className="border border-gray-300 px-4 py-2">{medicine.name}</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Might need to change later
-                    {medicine.schedule.morning ? "1" : "-"}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {medicine.schedule.afternoon ? "1" : "-"}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {medicine.schedule.evening ? "1" : "-"}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">{medicine.quantity}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table> */}
         </div>
 
         <table className="table-auto w-full border-collapse border border-gray-200 text-center">
@@ -443,25 +435,13 @@ const PrescriptionApp: NextPage = () => {
                 <td className="border border-gray-300 px-4 py-2">{medicine.name}</td>
                 <td className="border border-gray-300 px-4 py-2">{medicine.quantity}</td>
                 <td className="border border-gray-300 px-4 py-2">
-                  <input
-                    type="checkbox"
-                    checked={medicine.schedule.morning}
-                    onChange={() => toggleSchedule(index, "morning")}
-                  />
+                  {medicine.morning}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
-                  <input
-                    type="checkbox"
-                    checked={medicine.schedule.afternoon}
-                    onChange={() => toggleSchedule(index, "afternoon")}
-                  />
+                  {medicine.afternoon}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
-                  <input
-                    type="checkbox"
-                    checked={medicine.schedule.evening}
-                    onChange={() => toggleSchedule(index, "evening")}
-                  />
+                 {medicine.evening}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
                   <button
