@@ -370,7 +370,7 @@ const PrescriptionApp: NextPage = () => {
           <input
             type="number"
             placeholder="Pulse Count"
-            className="text-black border p-2 rounded"
+            className="text-black border p-2 rounded h-11"
             value={patientDetails.pulse}
             onChange={(e) =>
               setPatientDetails({ ...patientDetails, pulse: e.target.value })
@@ -379,7 +379,7 @@ const PrescriptionApp: NextPage = () => {
           <textarea
             placeholder="Signs & Symptoms"
             wrap="hard"
-            className="text-black border p-2 rounded whitespace-pre-wrap"
+            className="text-black border p-2 rounded whitespace-pre-wrap h-11"
             value={patientDetails.misc}
             onChange={(e) =>
               setPatientDetails({ ...patientDetails, misc: e.target.value })
@@ -391,19 +391,6 @@ const PrescriptionApp: NextPage = () => {
       <div className="mb-8">
         <h2 className="font-bold text-lg">Prescription:</h2>
         <div className="text-black flex items-center gap-4 my-4">
-          <input
-            type="text"
-            placeholder="Medicine Name"
-            className="border p-2 rounded flex-1"
-            value={medicineName}
-            onChange={(e) => setMedicineName(e.target.value)}
-            list="medicine-suggestions"
-          />
-          <datalist id="medicine-suggestions">
-            {suggestedMedicines.map((medicine, idx) => (
-              <option key={idx} value={medicine} />
-            ))}
-          </datalist>
           <select
             className="text-black border p-2 rounded"
             value={medicineType}
@@ -417,6 +404,19 @@ const PrescriptionApp: NextPage = () => {
             <option value="Cream">Cream</option>
             <option value="">Other</option>
           </select>
+          <input
+            type="text"
+            placeholder="Medicine Name"
+            className="border p-2 rounded flex-1"
+            value={medicineName}
+            onChange={(e) => setMedicineName(e.target.value)}
+            list="medicine-suggestions"
+          />
+          <datalist id="medicine-suggestions">
+            {suggestedMedicines.map((medicine, idx) => (
+              <option key={idx} value={medicine} />
+            ))}
+          </datalist>
           <input
             type="number"
             placeholder="Quantity"
