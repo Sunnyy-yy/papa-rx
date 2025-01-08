@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { NextPage } from "next";
 import nimalogo from '../../public/nima.png';
 
@@ -64,6 +64,7 @@ const PrescriptionApp: NextPage = () => {
     });
   };
 
+  
   const addMedicine = async () => {
     const newMedicine: Medicine = {
       name: medicineName,
@@ -93,11 +94,21 @@ const PrescriptionApp: NextPage = () => {
     setScheduleMorning("");
     setScheduleAfternoon("");
     setScheduleEvening("");
+
+    const dropdown = document.getElementById("medicine-type");
+  if (dropdown) {
+    (dropdown as HTMLSelectElement).focus();
+  }
   };
+  
   const deleteMedicine = (index: number) => {
     const updatedMedicines = medicines.filter((_, i) => i !== index);
     setMedicines(updatedMedicines);
   };
+
+  
+
+  
 
   // const toggleSchedule = (
   //   index: string,
@@ -118,6 +129,11 @@ const PrescriptionApp: NextPage = () => {
     const originalDate = currentDate;
   // Format the current date for the file path
   const formattedDate = originalDate.replace(/\//g, "-"); // Replace '/' with '-'
+  
+  const patientFocus = document.getElementById("patient-name");
+  if (patientFocus) {
+    (patientFocus as HTMLSelectElement).focus();
+  }
 
   const now = new Date();
   const hours = now.getHours().toString().padStart(2, '0');  // Ensure two digits (e.g., "09" instead of "9")
@@ -333,6 +349,7 @@ const PrescriptionApp: NextPage = () => {
         <div className="grid grid-cols-2 gap-4">
           <input
             type="text"
+            id="patient-name"
             placeholder="Patient Name"
             className="text-black border p-2 rounded"
             value={patientDetails.name}
@@ -392,6 +409,7 @@ const PrescriptionApp: NextPage = () => {
         <h2 className="font-bold text-lg">Prescription:</h2>
         <div className="text-black flex items-center gap-4 my-4">
           <select
+          id="medicine-type"
             className="text-black border p-2 rounded"
             value={medicineType}
             onChange={(e) => setMedicineType(e.target.value)}
