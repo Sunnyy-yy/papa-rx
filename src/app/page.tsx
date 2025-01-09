@@ -10,7 +10,6 @@ interface Medicine {
   morning: string;
   afternoon: string;
   evening: string;
-  
 }
 
 const PrescriptionApp: NextPage = () => {
@@ -358,7 +357,7 @@ const PrescriptionApp: NextPage = () => {
             }
           />
           <input
-            type="number"
+            type="text"
             placeholder="Age"
             className="text-black border p-2 rounded"
             value={patientDetails.age}
@@ -420,6 +419,7 @@ const PrescriptionApp: NextPage = () => {
             <option value="Lotion">Lotion</option>
             <option value="Ointment">Ointment</option>
             <option value="Cream">Cream</option>
+            <option value="Injection">Injection</option>
             <option value="">Other</option>
           </select>
           <input
